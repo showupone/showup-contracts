@@ -11,6 +11,8 @@ contract ShowUpPassMinter {
     }
 
     function mint(address account, uint256 amount) external payable {
+        // TODO: check price
+        // TODO: check max supply
         showUpPass.mint(account, 0, amount, "");
     }
 }
