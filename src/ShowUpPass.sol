@@ -8,10 +8,9 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 contract ShowUpPass is ERC1155, Ownable, ERC1155Supply {
     mapping(uint256 => address) public minter;
 
-    // mapping(uint256 => uint256) public maxSupply;
-    // mapping(uint256 => uint256) public price;
+    mapping(uint256 => uint256) public maxSupply;
 
-    constructor() ERC1155("https://showup.one/metadata/{id}.json") {}
+    constructor() ERC1155("https://metadata.showup.one/{id}.json") {}
 
     function setURI(string memory newuri) external onlyOwner {
         _setURI(newuri);
@@ -21,21 +20,20 @@ contract ShowUpPass is ERC1155, Ownable, ERC1155Supply {
         minter[id] = _minter;
     }
 
-    // function set(uint256 id, uint256 _maxSupply, uint256 _price) external onlyOwner {
-    //     maxSupply[id] = _maxSupply;
-    //     price[id] = _price;
-    // }
+    function setMaxSupply(uint256 id, uint256 _maxSupply) external onlyOwner {
+        maxSupply[id] = _maxSupply;
+    }
 
     // function withdraw() external onlyOwner {
     //     (bool success,) = msg.sender.call{value: address(this).balance}("");
     //     require(success, "Transfer failed.");
     // }
 
-    function mint(address account, uint256 id, uint256 amount, bytes memory data) external {
+    function mint(address to, uint256 id, uint256 amount, bytes memory data) external {
         // require(totalSupply(id) + amount <= maxSupply[id], "ShowUpPass: max supply reached");
         // require(msg.value == price[id] * amount, "ShowUpPass: incorrect price");
         require(msg.sender == minter[id], "ShowUpPass: FORBIDDEN");
-        _mint(account, id, amount, data);
+        _mint(to, id, amount, data);
     }
 
     function _beforeTokenTransfer(
