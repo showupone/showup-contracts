@@ -10,7 +10,7 @@ contract ShowUpPass is ERC1155, Ownable, ERC1155Supply {
 
     mapping(uint256 => uint256) public maxSupply;
 
-    constructor() ERC1155("https://metadata.showup.one/{id}.json") {}
+    constructor() ERC1155("ipfs://QmNfUvDn5xrJF5nBaqvvxs2UbghgbYLQ5QL87ZVkYZkEn8/{id}.json") {}
 
     function setURI(string memory newuri) external onlyOwner {
         _setURI(newuri);
@@ -32,7 +32,7 @@ contract ShowUpPass is ERC1155, Ownable, ERC1155Supply {
     function mint(address to, uint256 id, uint256 amount, bytes memory data) external {
         // require(totalSupply(id) + amount <= maxSupply[id], "ShowUpPass: max supply reached");
         // require(msg.value == price[id] * amount, "ShowUpPass: incorrect price");
-        require(msg.sender == minter[id], "ShowUpPass: FORBIDDEN");
+        require(msg.sender == minter[id], "Not minter");
         _mint(to, id, amount, data);
     }
 

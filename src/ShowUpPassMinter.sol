@@ -20,10 +20,10 @@ contract ShowUpPassMinter {
 
     function whitelistMint(address to, uint256 amount, bytes32[] memory proof) external payable {
         // TODO: check price
-        require(whitelistMerkleRoot != 0, "Without whitelist");
-        require(whitelistMintedAmount[to] + amount <= 2, "Amount exceeded");
-        bytes32 leaf = keccak256(abi.encodePacked(to));
-        require(MerkleProof.verify(proof, whitelistMerkleRoot, leaf), "Verify failed");
+        require(whitelistMerkleRoot != 0, "Whitelist not set");
+        require(whitelistMintedAmount[to] + amount <= 2, "Exceed limit");
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(to))));
+        require(MerkleProof.verify(proof, whitelistMerkleRoot, leaf), "Invalid proof");
         whitelistMintedAmount[to] += amount;
         showUpPass.mint(to, 0, amount, "");
     }

@@ -24,11 +24,12 @@ contract ShowUpPassTest is Test {
 
     function testWhitelistMint() public {
         ShowUpPassMinter showUpPassMinter = new ShowUpPassMinter(address(showUpPass));
-        bytes32 aliceHash = keccak256(abi.encodePacked(alice));
-        bytes32 bobHash = keccak256(abi.encodePacked(bob));
-        bytes32 merkleRoot = keccak256(abi.encodePacked(aliceHash, bobHash));
-        showUpPassMinter.setWhitelist(merkleRoot);
         showUpPass.setMinter(0, address(showUpPassMinter));
+
+        bytes32 aliceHash = keccak256(bytes.concat(keccak256(abi.encode(alice))));
+        bytes32 bobHash = keccak256(bytes.concat(keccak256(abi.encode(bob))));
+        bytes32 merkleRoot = keccak256(abi.encodePacked(bobHash, aliceHash));
+        showUpPassMinter.setWhitelist(merkleRoot);
 
         bytes32[] memory proof = new bytes32[](1);
 
