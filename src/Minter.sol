@@ -2,16 +2,18 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "./interface/IShowUpPass.sol";
+import "./interface/IMintable.sol";
 
-contract ShowUpPassMinter {
-    IShowUpPass public showUpPass;
+contract Minter {
+    IMintable public showUpPass;
+    IMintable public roadToUltraTaiwan;
 
     bytes32 public whitelistMerkleRoot = 0;
     mapping(address => uint256) public whitelistMintedAmount;
 
-    constructor(address _showUpPass) {
-        showUpPass = IShowUpPass(_showUpPass);
+    constructor(address _showUpPass, address _roadToUltraTaiwan) {
+        showUpPass = IMintable(_showUpPass);
+        roadToUltraTaiwan = IMintable(_roadToUltraTaiwan);
     }
 
     function setWhitelist(bytes32 merkleRoot) external {
@@ -25,11 +27,17 @@ contract ShowUpPassMinter {
         bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(to))));
         require(MerkleProof.verify(proof, whitelistMerkleRoot, leaf), "Invalid proof");
         whitelistMintedAmount[to] += amount;
-        showUpPass.mint(to, 0, amount, "");
+        for (uint256 i = 0; i < amount; i++) {
+            showUpPass.mint(to);
+            roadToUltraTaiwan.mint(to);
+        }
     }
 
     function mint(address to, uint256 amount) external payable {
         // TODO: check price
-        showUpPass.mint(to, 0, amount, "");
+        for (uint256 i = 0; i < amount; i++) {
+            showUpPass.mint(to);
+            roadToUltraTaiwan.mint(to);
+        }
     }
 }

@@ -8,15 +8,21 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract ShowUpPass is ERC721, ERC721Enumerable, ERC721Royalty, Ownable {
+import "./RoadToUltraTaiwanStub.sol";
+
+contract RoadToUltraTaiwan is ERC721, ERC721Enumerable, ERC721Royalty, Ownable {
     using Counters for Counters.Counter;
 
     address public minter;
+    RoadToUltraTaiwanStub public stub;
 
     Counters.Counter private _tokenIdCounter;
     string private baseURI_;
 
-    constructor() ERC721("ShowUpPass", "SHOWUP") {}
+    constructor() ERC721("RoadToUltraTaiwan", "RTUTW") {
+        stub = new RoadToUltraTaiwanStub();
+        stub.setMinter(address(this));
+    }
 
     function _baseURI() internal view override returns (string memory) {
         return baseURI_;
@@ -39,6 +45,12 @@ contract ShowUpPass is ERC721, ERC721Enumerable, ERC721Royalty, Ownable {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
+    }
+
+    function redeem(uint256 tokenId) external {
+        require(msg.sender == ownerOf(tokenId), "Not owner");
+        _burn(tokenId);
+        stub.mint(msg.sender, tokenId);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
